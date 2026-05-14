@@ -10,6 +10,12 @@ Build the Docker image:
 docker build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) -t a33-builder ./docker/
 ```
 
+Enter the container:
+
+```bash
+docker run -it --rm -v $(pwd):/home/builder/workspace a33-builder bash
+```
+
 ## Phase 2: SD Card Partitioning & RootFS
 
 The SD card requires a specific partition table to leave room for the bootloader at the very beginning of the drive (the first 1MB of the drive completely empty, unallocated space; Partition 1, 100MB FAT32, label BOOT; Partition 2, remaining space ext4, label ROOTFS).
