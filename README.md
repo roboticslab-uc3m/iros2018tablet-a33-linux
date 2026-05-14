@@ -7,9 +7,8 @@ Objective: Bypass the factory bootloader to run Linux on an Allwinner A33 "Q8" t
 Clone the mainline U-Boot repository (using the GitHub mirror for speed; checkout a recent, stable release to avoid bleeding-edge bugs):
 
 ```bash
-git clone https://github.com/u-boot/u-boot.git
+git clone --branch v2024.01 --depth 1 https://github.com/u-boot/u-boot.git
 cd u-boot
-git checkout v2024.01
 ```
 
 Build the Docker image:
@@ -38,7 +37,7 @@ make CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc)
 
 ## Phase 2: SD Card Partitioning & RootFS
 
-The SD card requires a specific partition table to leave room for the bootloader at the very beginning of the drive (the first 1MB of the drive completely empty, unallocated space; Partition 1, 100MB FAT32, label BOOT; Partition 2, remaining space ext4, label ROOTFS).
+The SD card requires a specific partition table to leave room for the bootloader at the very beginning of the drive (the first 1MB of the drive completely empty, unallocated space; Partition 1, 100MB FAT32, label BOOT; Partition 2, remaining space ext4, label ROOTFS). Write the resulting `u-boot-sunxi-with-spl.bin` directly to the SD card's raw block device, skipping the first 8KB (better via script, essentially `sudo dd if=u-boot-sunxi-with-spl.bin of=/dev/sdX bs=1024 seek=8`):
 
 ```bash
 ./scripts/flash_sd_allwinner.sh
