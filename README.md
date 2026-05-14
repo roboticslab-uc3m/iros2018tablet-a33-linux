@@ -1,8 +1,10 @@
 # iros2018tablet-a33-linux
 
-Bypass the factory bootloader to run Linux on an Allwinner A33 "Q8" tablet.
+Objective: Bypass the factory bootloader to run Linux on an Allwinner A33 "Q8" tablet. The Allwinner BootROM (BROM) is hardcoded. When you power on an A33 device, the silicon permanently executes a specific sequence before it even looks at the internal NAND memory where your Android 4.4 KitKat sits. It checks MMC0 (the Micro-SD slot) first. If it finds a valid boot signature at a specific offset (8KB), it will execute it. If it doesn't, it falls back to the internal NAND, and if that is corrupted, it drops to the USB FEL mode (1f3a:efe8). This means your tablets are practically unbrickable. We can completely bypass the internal storage by putting a bootloader (U-Boot) on the SD card.
 
-## Phase 1: SD Card Partitioning & RootFS
+## Phase 1: u-boot-sunxi-with-spl.bin
+
+## Phase 2: SD Card Partitioning & RootFS
 
 The SD card requires a specific partition table to leave room for the bootloader at the very beginning of the drive (the first 1MB of the drive completely empty, unallocated space; Partition 1, 100MB FAT32, label BOOT; Partition 2, remaining space ext4, label ROOTFS).
 
