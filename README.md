@@ -4,6 +4,14 @@ Objective: Bypass the factory bootloader to run Linux on an Allwinner A33 "Q8" t
 
 ## Phase 1: u-boot-sunxi-with-spl.bin
 
+Clone the mainline U-Boot repository (using the GitHub mirror for speed; checkout a recent, stable release to avoid bleeding-edge bugs):
+
+```bash
+git clone https://github.com/u-boot/u-boot.git
+cd u-boot
+git checkout v2024.01
+```
+
 Build the Docker image:
 
 ```bash
@@ -14,6 +22,18 @@ Enter the container:
 
 ```bash
 docker run -it --rm -v $(pwd):/home/builder/workspace a33-builder bash
+```
+
+(Inside the container) Configure the build environment for the A33 tablet reference design:
+
+```bash
+make CROSS_COMPILE=arm-linux-gnueabihf- q8_a33_tablet_1024x600_defconfig
+```
+
+(Inside the container) Compile U-Boot:
+
+```bash
+make CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc)
 ```
 
 ## Phase 2: SD Card Partitioning & RootFS
