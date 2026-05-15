@@ -2,7 +2,9 @@
 
 Objective: Bypass the factory bootloader to run Linux on an Allwinner A33 "Q8" tablet. The Allwinner BootROM (BROM) is hardcoded. When you power on an A33 device, the silicon permanently executes a specific sequence before it even looks at the internal NAND memory where your Android 4.4 KitKat sits. It checks MMC0 (the Micro-SD slot) first. If it finds a valid boot signature at a specific offset (8KB), it will execute it. If it doesn't, it falls back to the internal NAND, and if that is corrupted, it drops to the USB FEL mode (1f3a:efe8). This means your tablets are practically unbrickable. We can completely bypass the internal storage by putting a bootloader (U-Boot) on the SD card.
 
-## Phase 1: u-boot-sunxi-with-spl.bin
+## Phase 1: Generate `u-boot-sunxi-with-spl.bin`
+
+We want `u-boot-sunxi-with-spl.bin` because it is important for Allwinner (such as A33) chips. It contains two parts: SPL (Secondary Program Loader, a tiny piece of code that fits into the tablet's tiny 32KB internal SRAM, with the only job of turning the DDR RAM on) and U-Boot (Once the RAM is on, the SPL loads the main U-Boot program into the massive 1 GB RAM space and executes it).
 
 Clone the mainline U-Boot repository (using the GitHub mirror for speed; checkout a recent, stable release to avoid bleeding-edge bugs):
 
