@@ -74,7 +74,7 @@ git clone --depth=1 --branch v6.6 https://github.com/torvalds/linux.git
 cd linux
 ```
 
-Over-write the device tree (adapt paths depending on your setup):
+Over-write the device tree source (adapt paths depending on your setup):
 
 ```bash
 cp ./dts/sun8i-a33-q8-tablet-peripheral.dts arch/arm/boot/dts/allwinner/sun8i-a33-q8-tablet.dts
