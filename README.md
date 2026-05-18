@@ -97,3 +97,10 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- sunxi_defconfig
 ```bash
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc) zImage dtbs
 ```
+
+Exit the container and copy the generated core files to your microSD (adapt paths depending on your setup, e.g. `/mnt/BOOT` may be `/media/$USER/BOOT`)
+
+```bash
+cp linux/arch/arm/boot/zImage /mnt/BOOT/
+cp linux/arch/arm/boot/dts/allwinner/sun8i-a33-q8-tablet.dtb /mnt/BOOT/
+```
