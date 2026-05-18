@@ -70,7 +70,7 @@ mkimage -C none -A arm -T script -d ./scripts/boot.cmd /mnt/BOOT/boot.scr
 Clone the stable Linux kernel (using depth=1 saves downloading GBs of history):
 
 ```bash
-git clone --depth=1 -b linux-6.6.y https://github.com/torvalds/linux.git
+git clone --depth=1 --branch v6.6 https://github.com/torvalds/linux.git
 cd linux
 ```
 
