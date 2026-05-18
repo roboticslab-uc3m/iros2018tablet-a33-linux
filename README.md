@@ -106,3 +106,12 @@ cp linux/arch/arm/boot/dts/allwinner/sun8i-a33-q8-tablet.dtb /mnt/BOOT/
 ```
 
 If you boot from this microSD card, you should reach Das U-Boot message ""Starting kernel ..."!
+
+## Phase 5: Install Debian (armhf)
+
+Run debootstrap to construct Debian 12 (Bookworm) for the 32-bit ARM architecture. This will take a few minutes as it downloads and extracts the core packages ((adapt paths depending on your setup, e.g. `/mnt/ROOTFS` may be `/media/$USER/ROOTFS`):
+
+```bash
+sudo apt install debootstrap qemu-user-static
+sudo debootstrap --arch=armhf bookworm /mnt/ROOTFS http://deb.debian.org/debian/
+```
