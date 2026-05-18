@@ -58,9 +58,9 @@ With this, you should be able to turn the tablet on with this microSD inside, re
 
 ## Phase 3: Generate and install `boot.scr`
 
-Adapt paths depending on your setup:
+Adapt paths depending on your setup (e.g. `/mnt/BOOT` may be `/media/$USER/BOOT`):
 
 ```bash
 sudo apt install u-boot-tools
-mkimage -C none -A arm -T script -d ./scripts/boot.cmd /mnt/tablet_boot/boot.scr
+mkimage -C none -A arm -T script -d ./scripts/boot.cmd /mnt/BOOT/boot.scr
 ```
