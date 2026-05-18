@@ -53,3 +53,12 @@ The MicroSD card requires a specific partition table to leave room for the bootl
 ```
 
 With this, you should be able to turn the tablet on with this microSD inside, resulting in a boot sequence that displays the Das U-Boot logo and some errors (rather than the vendor-installed Android sequence), ending at a `=>`.
+
+## Phase 3: Generate and install `boot.scr`
+
+Adapt paths depending on your setup:
+
+```bash
+sudo apt install u-boot-tools
+mkimage -C none -A arm -T script -d ./scripts/boot.cmd /mnt/tablet_boot/boot.scr
+```
