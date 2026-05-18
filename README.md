@@ -64,3 +64,30 @@ Adapt paths depending on your setup (e.g. `/mnt/BOOT` may be `/media/$USER/BOOT`
 sudo apt install u-boot-tools
 mkimage -C none -A arm -T script -d ./scripts/boot.cmd /mnt/BOOT/boot.scr
 ```
+
+## Phase 4: `zImage` and `dtbs`
+
+Clone the stable Linux kernel (using depth=1 saves downloading GBs of history):
+
+```bash
+git clone --depth=1 -b linux-6.6.y https://github.com/torvalds/linux.git
+cd linux
+```
+
+Enter the container:
+
+```bash
+docker run -it --rm -v $(pwd):/home/builder/workspace a33-builder bash
+```
+
+(Inside the container) Configure the kernel for Allwinner (sunxi) processors:
+
+```bash
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- sunxi_defconfig
+```
+
+(Inside the container) Compile the Kernel and Device Trees (this will take a few minutes)
+
+```bash
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc) zImage dtbs
+```
