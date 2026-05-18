@@ -47,5 +47,5 @@ MicroSD characteristics:
 The MicroSD card requires a specific partition table to leave room for the bootloader at the very beginning of the drive (the first 1MB of the drive completely empty, unallocated space; Partition 1, 100MB FAT32, label BOOT; Partition 2, remaining space ext4, label ROOTFS). Write the resulting `u-boot-sunxi-with-spl.bin` directly to the SD card's raw block device, skipping the first 8KB (better via script, essentially `sudo dd if=u-boot-sunxi-with-spl.bin of=/dev/sdX bs=1024 seek=8`):
 
 ```bash
-./scripts/flash_sd_allwinner.sh
+./scripts/flash_sd_allwinner.sh ./u-boot-sunxi-with-spl.bin /dev/sdX # adapt to your file path and device name
 ```
