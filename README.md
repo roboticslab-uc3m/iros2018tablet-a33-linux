@@ -37,6 +37,8 @@ make CROSS_COMPILE=arm-linux-gnueabihf- q8_a33_tablet_1024x600_defconfig
 make CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc)
 ```
 
+This generates our desired `u-boot-sunxi-with-spl.bin` file.
+
 ## Phase 2: MicroSD Card Partitioning & RootFS
 
 MicroSD characteristics:
