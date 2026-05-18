@@ -39,6 +39,8 @@ make CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc)
 
 This generates our desired `u-boot-sunxi-with-spl.bin` file.
 
+Exit the container.
+
 ## Phase 2: MicroSD Card Partitioning & RootFS
 
 MicroSD characteristics:
