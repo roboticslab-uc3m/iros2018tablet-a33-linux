@@ -52,4 +52,4 @@ The MicroSD card requires a specific partition table to leave room for the bootl
 ./scripts/flash_sd_allwinner.sh ./u-boot-sunxi-with-spl.bin /dev/sdX # adapt to your file path and device name
 ```
 
-You should be able to turn the tablet with this microSD inside, resulting in a boot sequence that displays the Das U-Boot logo and some errors (rather than the vendor-installed Android sequence), ending at a `=>`.
+With this, you should be able to turn the tablet on with this microSD inside, resulting in a boot sequence that displays the Das U-Boot logo and some errors (rather than the vendor-installed Android sequence), ending at a `=>`.
