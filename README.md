@@ -104,3 +104,5 @@ Exit the container and copy the generated core files to your microSD (adapt path
 cp linux/arch/arm/boot/zImage /mnt/BOOT/
 cp linux/arch/arm/boot/dts/allwinner/sun8i-a33-q8-tablet.dtb /mnt/BOOT/
 ```
+
+If you boot from this microSD card, you should reach Das U-Boot message ""Starting kernel ..."!
