@@ -41,7 +41,7 @@ This generates our desired `u-boot-sunxi-with-spl.bin` file.
 
 Exit the container.
 
-## Step 2: MicroSD Card Partitioning & RootFS
+## Step 2: MicroSD Card Partitioning + Install `u-boot-sunxi-with-spl.bin` at 8KB + `boot.scr` to BOOT via u-boot-tools 
 
 MicroSD characteristics:
 
