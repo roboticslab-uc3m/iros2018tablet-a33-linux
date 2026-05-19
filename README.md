@@ -81,20 +81,24 @@ docker run -it --rm -v $(pwd):/home/builder/workspace a33-builder bash
 (Inside the container) Configure the kernel for Allwinner (sunxi) processors:
 
 ```bash
+# Nuke the old config and load the default factory baseline
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- sunxi_defconfig
 
-# 1. Turn OFF the modern DRM stack that is currently failing
-./scripts/config --disable CONFIG_DRM
-./scripts/config --disable CONFIG_DRM_LIMA
+# Resurrect DRM and Lima (GPU)
+./scripts/config --enable CONFIG_DRM
+./scripts/config --enable CONFIG_DRM_SUN4I
+./scripts/config --enable CONFIG_DRM_SUN8I_MIXER
+./scripts/config --module CONFIG_DRM_LIMA
 
-# 2. Turn ON the legacy Framebuffer subsystem
-./scripts/config --enable CONFIG_FB
-./scripts/config --enable CONFIG_FB_SIMPLE
+# Enable the DPI Panel Drivers
+./scripts/config --enable CONFIG_DRM_PANEL
+./scripts/config --enable CONFIG_DRM_PANEL_SIMPLE
 
-# 3. Bind the Linux text console to the Framebuffer
+# Turn on the DRM Text Console (So you still get your boot text!)
+./scripts/config --enable CONFIG_DRM_FBDEV_EMULATION
 ./scripts/config --enable CONFIG_FRAMEBUFFER_CONSOLE
-./scripts/config --enable CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY
-./scripts/config --enable CONFIG_LOGO  # Optional: Shows the Tux penguins on boot!
+
+#./scripts/config --enable CONFIG_LOGO  # Optional: Shows the Tux penguins on boot!
 
 # The Touchscreen (Silead GSL2681)
 ./scripts/config --enable CONFIG_INPUT_TOUCHSCREEN
@@ -128,8 +132,8 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc) zImage dtbs
 Exit the container and copy the generated core files to your microSD (adapt paths depending on your setup, e.g. `/media/$USER/BOOT` may be `/mnt/BOOT`)
 
 ```bash
-cp linux/arch/arm/boot/zImage /mnt/BOOT/
-cp linux/arch/arm/boot/dts/allwinner/sun8i-a33-q8-tablet.dtb /mnt/BOOT/
+cp arch/arm/boot/zImage /media/$USER/BOOT/
+cp arch/arm/boot/dts/allwinner/sun8i-a33-q8-tablet.dtb /media/$USER/BOOT/
 ```
 
 If you boot from this microSD card, you should reach Das U-Boot message ""Starting kernel ..."!
