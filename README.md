@@ -90,6 +90,33 @@ docker run -it --rm -v $(pwd):/home/builder/workspace a33-builder bash
 
 ```bash
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- sunxi_defconfig
+
+# Force the Direct Rendering Manager and Sun4i (Allwinner) drivers to be built-in
+./scripts/config --enable CONFIG_DRM
+./scripts/config --enable CONFIG_DRM_SUN4I
+./scripts/config --enable CONFIG_DRM_SUN8I_MIXER
+
+# Force the Simple Framebuffer and Console to be built-in
+./scripts/config --enable CONFIG_FB
+./scripts/config --enable CONFIG_FB_SIMPLE
+./scripts/config --enable CONFIG_FRAMEBUFFER_CONSOLE
+
+# Bake in USB Gadget Serial
+./scripts/config --enable CONFIG_USB_GADGET
+./scripts/config --enable CONFIG_USB_MUSB_HDRC
+./scripts/config --enable CONFIG_USB_MUSB_SUNXI
+./scripts/config --enable CONFIG_USB_MUSB_GADGET
+./scripts/config --enable CONFIG_USB_G_SERIAL
+
+# Bake in Core Networking / Wi-Fi Subsystems
+./scripts/config --enable CONFIG_WLAN
+./scripts/config --enable CONFIG_CFG80211
+./scripts/config --enable CONFIG_CFG80211_WEXT
+./scripts/config --enable CONFIG_MAC80211
+./scripts/config --enable CONFIG_WIRELESS_EXT
+
+# Apply config
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- olddefconfig
 ```
 
 (Inside the container) Compile the Kernel and Device Trees (this will take a few minutes)
