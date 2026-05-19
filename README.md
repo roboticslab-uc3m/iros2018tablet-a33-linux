@@ -109,9 +109,16 @@ If you boot from this microSD card, you should reach Das U-Boot message ""Starti
 
 ## Phase 5: Install Debian (armhf)
 
-Run debootstrap to construct Debian 12 (Bookworm) for the 32-bit ARM architecture. This will take a few minutes as it downloads and extracts the core packages ((adapt paths depending on your setup, e.g. `/mnt/ROOTFS` may be `/media/$USER/ROOTFS`):
+Run debootstrap to construct Debian 12 (Bookworm) for the 32-bit ARM architecture. This will take a few minutes as it downloads and extracts the core packages ((adapt paths depending on your setup, e.g. `/mnt/ROOTFS` may be `/media/$USER/ROOTFS`; additionally, permissions e.g. `sudo mount -o remount,exec,dev,suid /mnt/ROOTFS`):
 
 ```bash
 sudo apt install debootstrap qemu-user-static
 sudo debootstrap --arch=armhf bookworm /mnt/ROOTFS http://deb.debian.org/debian/
+```
+
+And set the password:
+
+```bash
+sudo chroot /mnt/ROOTFS /bin/bash
+passwd
 ```
