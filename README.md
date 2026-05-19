@@ -147,11 +147,19 @@ sudo apt install debootstrap qemu-user-static
 sudo debootstrap --arch=armhf bookworm /mnt/ROOTFS http://deb.debian.org/debian/
 ```
 
-And set the password:
+Set the password:
 
 ```bash
 sudo chroot /media/$USER/ROOTFS /bin/bash
 passwd
+```
+
+And update the hostname (when you run `debootstrap`, it often directly copies your host Ubuntu PC's `/etc/hosts` file onto the SD card, we want to override that):
+
+```bash
+export NEW_HOSTNAME=iros2018tablet
+sudo bash -c "echo '$NEW_HOSTNAME' > /media/$USER/ROOTFS/etc/hostname"
+sudo bash -c "echo -e '127.0.0.1\tlocalhost\n127.0.1.1\t$NEW_HOSTNAME' > /media/$USER/ROOTFS/etc/hosts"
 ```
 
 Note: `sudo screen /dev/ttyACM0 115200`
