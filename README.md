@@ -2,7 +2,7 @@
 
 Objective: Bypass the factory bootloader to run Linux on an Allwinner A33 "Q8" tablet. The Allwinner BootROM (BROM) is hardcoded. When you power on an A33 device, the silicon permanently executes a specific sequence before it even looks at the internal NAND memory where your Android 4.4 KitKat sits. It checks MMC0 (the Micro-SD slot) first. If it finds a valid boot signature at a specific offset (8KB), it will execute it. If it doesn't, it falls back to the internal NAND, and if that is corrupted, it drops to the USB FEL mode (1f3a:efe8). This means your tablets are practically unbrickable. We can completely bypass the internal storage by putting a bootloader (U-Boot) on the SD card.
 
-## Phase 1: Generate `u-boot-sunxi-with-spl.bin`
+## Step 1: Generate `u-boot-sunxi-with-spl.bin`
 
 We want `u-boot-sunxi-with-spl.bin` because it is important for Allwinner (such as A33) chips. It contains two parts: SPL (Secondary Program Loader, a tiny piece of code that fits into the tablet's tiny 32KB internal SRAM, with the only job of turning the DDR RAM on) and U-Boot (Once the RAM is on, the SPL loads the main U-Boot program into the massive 1 GB RAM space and executes it).
 
@@ -41,33 +41,25 @@ This generates our desired `u-boot-sunxi-with-spl.bin` file.
 
 Exit the container.
 
-## Phase 2: MicroSD Card Partitioning & RootFS
+## Step 2: MicroSD Card Partitioning & RootFS
 
 MicroSD characteristics:
 
 - Capacity: 16GB or 32GB. 32GB is the maximum size for the SDHC standard. Staying at or below 32GB ensures maximum compatibility with the A33's BootROM without having to worry about SDXC formatting quirks. It gives you plenty of room for logs, swap space, and experimenting. Note: I've tried with 64 GB and `u-boot-sunxi-with-spl.bin` was **not** detected, you have been warned. :smiley:
 - Speed / Class: Look for UHS-I (U1 or U3) with an A1 Application Performance Class rating.
 
-The MicroSD card requires a specific partition table to leave room for the bootloader at the very beginning of the drive (the first 1MB of the drive completely empty, unallocated space; Partition 1, 100MB FAT32, label BOOT; Partition 2, remaining space ext4, label ROOTFS). You must write the resulting `u-boot-sunxi-with-spl.bin` directly to the SD card's raw block device, skipping the first 8KB. All of this (including essentially `sudo dd if=u-boot-sunxi-with-spl.bin of=/dev/sdX bs=1024 seek=8`) is better via script:
+The MicroSD card requires a specific partition table to leave room for the bootloader at the very beginning of the drive (the first 1MB of the drive completely empty, unallocated space; Partition 1, 100MB FAT32, label BOOT; Partition 2, remaining space ext4, label ROOTFS). You must write the resulting `u-boot-sunxi-with-spl.bin` directly to the SD card's raw block device, skipping the first 8KB. All of this (including essentially `sudo dd if=u-boot-sunxi-with-spl.bin of=/dev/sdX bs=1024 seek=8`) is better via script (now contains `mkimage -C none -A arm -T script -d ./scripts/boot.cmd /mnt/BOOT/boot.scr`):
 
 ```bash
+sudo apt install u-boot-tools
 ./scripts/flash_sd_allwinner.sh ./u-boot-sunxi-with-spl.bin /dev/sdX # adapt to your file path and device name
 ```
 
 With this, you should be able to turn the tablet on with this microSD inside, resulting in a boot sequence that displays the Das U-Boot logo and some errors (rather than the vendor-installed Android sequence), ending at a `=>`.
 
-## Phase 3: Generate and install `boot.scr`
+## Step 3: `zImage` and `dtbs`
 
-Adapt paths depending on your setup (e.g. `/mnt/BOOT` may be `/media/$USER/BOOT`):
-
-```bash
-sudo apt install u-boot-tools
-mkimage -C none -A arm -T script -d ./scripts/boot.cmd /mnt/BOOT/boot.scr
-```
-
-## Phase 4: `zImage` and `dtbs`
-
-Clone the stable Linux kernel (using depth=1 saves downloading GBs of history):
+BOOT partition needs 3 files: `boot.scr` (done in previous step), `zImage` and `dtbs`. Clone the stable Linux kernel (using depth=1 saves downloading GBs of history):
 
 ```bash
 git clone --depth=1 --branch v6.6 https://github.com/torvalds/linux.git
@@ -142,7 +134,7 @@ cp linux/arch/arm/boot/dts/allwinner/sun8i-a33-q8-tablet.dtb /mnt/BOOT/
 
 If you boot from this microSD card, you should reach Das U-Boot message ""Starting kernel ..."!
 
-## Phase 5: Install Debian (armhf)
+## Step 4: Install Debian (armhf)
 
 Run debootstrap to construct Debian 12 (Bookworm) for the 32-bit ARM architecture. This will take a few minutes as it downloads and extracts the core packages ((adapt paths depending on your setup, e.g. `/media/$USER/ROOTFS` may be `/mnt/ROOTFS`; additionally, permissions e.g. `sudo mount -o remount,exec,dev,suid /media/$USER/ROOTFS`):
 
