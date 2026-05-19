@@ -91,29 +91,37 @@ docker run -it --rm -v $(pwd):/home/builder/workspace a33-builder bash
 ```bash
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- sunxi_defconfig
 
-# Force the Direct Rendering Manager and Sun4i (Allwinner) drivers to be built-in
-./scripts/config --enable CONFIG_DRM
-./scripts/config --enable CONFIG_DRM_SUN4I
-./scripts/config --enable CONFIG_DRM_SUN8I_MIXER
+# 1. Turn OFF the modern DRM stack that is currently failing
+./scripts/config --disable CONFIG_DRM
+./scripts/config --disable CONFIG_DRM_LIMA
 
-# Force the Simple Framebuffer and Console to be built-in
+# 2. Turn ON the legacy Framebuffer subsystem
 ./scripts/config --enable CONFIG_FB
 ./scripts/config --enable CONFIG_FB_SIMPLE
+
+# 3. Bind the Linux text console to the Framebuffer
 ./scripts/config --enable CONFIG_FRAMEBUFFER_CONSOLE
+./scripts/config --enable CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY
+./scripts/config --enable CONFIG_LOGO  # Optional: Shows the Tux penguins on boot!
 
-# Bake in USB Gadget Serial
-./scripts/config --enable CONFIG_USB_GADGET
+# The Touchscreen (Silead GSL2681)
+./scripts/config --enable CONFIG_INPUT_TOUCHSCREEN
+./scripts/config --enable CONFIG_I2C_SUN6I_P2WI      # Allwinner specific I2C
+./scripts/config --module CONFIG_TOUCHSCREEN_SILEAD
+
+# The USB Subsystem (Host Mode for Android Auto)
+./scripts/config --enable CONFIG_USB
+./scripts/config --enable CONFIG_USB_SUPPORT
+./scripts/config --enable CONFIG_USB_MUSB_SUNXI      # Allwinner USB PHY
 ./scripts/config --enable CONFIG_USB_MUSB_HDRC
-./scripts/config --enable CONFIG_USB_MUSB_SUNXI
-./scripts/config --enable CONFIG_USB_MUSB_GADGET
-./scripts/config --enable CONFIG_USB_G_SERIAL
+./scripts/config --enable CONFIG_USB_MUSB_HOST       # Force it to be the "Boss"
 
-# Bake in Core Networking / Wi-Fi Subsystems
+# The Wi-Fi (Realtek SDIO)
 ./scripts/config --enable CONFIG_WLAN
-./scripts/config --enable CONFIG_CFG80211
-./scripts/config --enable CONFIG_CFG80211_WEXT
-./scripts/config --enable CONFIG_MAC80211
-./scripts/config --enable CONFIG_WIRELESS_EXT
+./scripts/config --module CONFIG_CFG80211
+./scripts/config --module CONFIG_MAC80211
+./scripts/config --enable CONFIG_STAGING             # Required for Realtek driver
+./scripts/config --enable CONFIG_R8723BS             # The RTL8723BS SDIO driver
 
 # Apply config
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- olddefconfig
@@ -125,7 +133,7 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- olddefconfig
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc) zImage dtbs
 ```
 
-Exit the container and copy the generated core files to your microSD (adapt paths depending on your setup, e.g. `/mnt/BOOT` may be `/media/$USER/BOOT`)
+Exit the container and copy the generated core files to your microSD (adapt paths depending on your setup, e.g. `/media/$USER/BOOT` may be `/mnt/BOOT`)
 
 ```bash
 cp linux/arch/arm/boot/zImage /mnt/BOOT/
@@ -136,7 +144,7 @@ If you boot from this microSD card, you should reach Das U-Boot message ""Starti
 
 ## Phase 5: Install Debian (armhf)
 
-Run debootstrap to construct Debian 12 (Bookworm) for the 32-bit ARM architecture. This will take a few minutes as it downloads and extracts the core packages ((adapt paths depending on your setup, e.g. `/mnt/ROOTFS` may be `/media/$USER/ROOTFS`; additionally, permissions e.g. `sudo mount -o remount,exec,dev,suid /mnt/ROOTFS`):
+Run debootstrap to construct Debian 12 (Bookworm) for the 32-bit ARM architecture. This will take a few minutes as it downloads and extracts the core packages ((adapt paths depending on your setup, e.g. `/media/$USER/ROOTFS` may be `/mnt/ROOTFS`; additionally, permissions e.g. `sudo mount -o remount,exec,dev,suid /media/$USER/ROOTFS`):
 
 ```bash
 sudo apt install debootstrap qemu-user-static
@@ -146,6 +154,8 @@ sudo debootstrap --arch=armhf bookworm /mnt/ROOTFS http://deb.debian.org/debian/
 And set the password:
 
 ```bash
-sudo chroot /mnt/ROOTFS /bin/bash
+sudo chroot /media/$USER/ROOTFS /bin/bash
 passwd
 ```
+
+Note: `sudo screen /dev/ttyACM0 115200`
