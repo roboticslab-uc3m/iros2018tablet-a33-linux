@@ -175,10 +175,10 @@ git clone https://github.com/lwfinger/rtw88.git
 cd rtw88
 ```
 
-Cross-compile it against your newly built 6.6 kernel:
+(Inside the container, note the expected `../linux` from before) Cross-compile it against your newly built 6.6 kernel:
 
 ```bash
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -C /path/to/your/linux M=$(pwd) modules
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -C ../linux M=$(pwd) modules
 ```
 
 Install the Modules: Mount the ROOTFS partition on the host.
