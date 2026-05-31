@@ -156,6 +156,8 @@ To force USB gadget, Create the symlink to force systemd to spawn a login prompt
 sudo ln -s /lib/systemd/system/serial-getty@.service /media/$USER/ROOTFS/etc/systemd/system/getty.target.wants/serial-getty@ttyGS0.service
 ```
 
+Check via `echo "ttyGS0" | sudo tee -a /media/yo/ROOTFS/etc/securetty`.
+
 ## Step 4: Install Debian (armhf)
 
 Run debootstrap to construct Debian 12 (Bookworm) for the 32-bit ARM architecture. This will take a few minutes as it downloads and extracts the core packages ((adapt paths depending on your setup, e.g. `/media/$USER/ROOTFS` may be `/mnt/ROOTFS`; additionally, permissions e.g. `sudo mount -o remount,exec,dev,suid /media/$USER/ROOTFS`):
