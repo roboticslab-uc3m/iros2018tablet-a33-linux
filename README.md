@@ -225,7 +225,9 @@ modprobe rtw_sdio
 modprobe rtw_8723cs
 ```
 
-Verify the interface exists using ip a (look for wlan0).
+Verify the interface exists using `ip a` (look for `wlan0`).
+
+Before these work, we need to install stuff:
 
 Connect to Network: Enable radio and connect via NetworkManager:
 
@@ -233,3 +235,5 @@ Connect to Network: Enable radio and connect via NetworkManager:
 nmcli radio wifi on
 nmcli dev wifi connect "YOUR_SSID" password "YOUR_PASSWORD"
 ```
+
+## Step 6: Install stuff
