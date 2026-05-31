@@ -110,14 +110,16 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- sunxi_defconfig
 ./scripts/config --enable CONFIG_USB_SUPPORT
 ./scripts/config --enable CONFIG_USB_MUSB_SUNXI      # Allwinner USB PHY
 ./scripts/config --enable CONFIG_USB_MUSB_HDRC
+./scripts/config --disable CONFIG_USB_MUSB_DUAL_ROLE # 1. Aggressively kill the conflicting USB modes
 
 # The USB Subsystem (Host Mode for Android Auto)
 #./scripts/config --enable CONFIG_USB_MUSB_HOST       # Force it to be the "Boss"
 
 # The USB Subsystem (Gadget Mode for Serial Console)
+./scripts/config --disable CONFIG_USB_MUSB_HOST # 1. Aggressively kill the conflicting USB modes
 ./scripts/config --enable CONFIG_USB_MUSB_GADGET
 ./scripts/config --enable CONFIG_USB_GADGET
-./scripts/config --module CONFIG_USB_G_SERIAL   # Building CONFIG_USB_G_SERIAL as a module (--module) rather than baking it in (--enable) is generally safer for systemd, as it allows the root filesystem to fully mount before the USB serial port initializes.)
+./scripts/config --enable CONFIG_USB_G_SERIAL   # Building CONFIG_USB_G_SERIAL as a module (--module) rather than baking it in (--enable) is generally safer for systemd, as it allows the root filesystem to fully mount before the USB serial port initializes.) -> # 3. Bake the Serial Gadget directly into the kernel (No module loading needed!)
 
 # The Wi-Fi (Realtek SDIO)
 ./scripts/config --enable CONFIG_WLAN
