@@ -105,12 +105,19 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- sunxi_defconfig
 ./scripts/config --enable CONFIG_I2C_SUN6I_P2WI      # Allwinner specific I2C
 ./scripts/config --module CONFIG_TOUCHSCREEN_SILEAD
 
-# The USB Subsystem (Host Mode for Android Auto)
+# The USB Subsystem (Shared for both modes)
 ./scripts/config --enable CONFIG_USB
 ./scripts/config --enable CONFIG_USB_SUPPORT
 ./scripts/config --enable CONFIG_USB_MUSB_SUNXI      # Allwinner USB PHY
 ./scripts/config --enable CONFIG_USB_MUSB_HDRC
-./scripts/config --enable CONFIG_USB_MUSB_HOST       # Force it to be the "Boss"
+
+# The USB Subsystem (Host Mode for Android Auto)
+#./scripts/config --enable CONFIG_USB_MUSB_HOST       # Force it to be the "Boss"
+
+# The USB Subsystem (Gadget Mode for Serial Console)
+./scripts/config --enable CONFIG_USB_MUSB_GADGET
+./scripts/config --enable CONFIG_USB_GADGET
+./scripts/config --module CONFIG_USB_G_SERIAL
 
 # The Wi-Fi (Realtek SDIO)
 ./scripts/config --enable CONFIG_WLAN
