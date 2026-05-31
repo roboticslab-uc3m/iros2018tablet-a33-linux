@@ -163,3 +163,59 @@ sudo bash -c "echo -e '127.0.0.1\tlocalhost\n127.0.1.1\t$NEW_HOSTNAME' > /media/
 ```
 
 Note: `sudo screen /dev/ttyACM0 115200`
+
+## Step 5: 
+
+The tablet's motherboard uses an RTL8703B chip (reporting on the SDIO bus as `0xb703`/8723CS). Mainline 6.6 does not include this driver. We must cross-compile the community rtw88 framework.
+
+Compile the Driver: Clone the community repository inside the Docker container (outside the linux tree):
+
+```bash
+git clone https://github.com/lwfinger/rtw88.git
+cd rtw88
+```
+
+Cross-compile it against your newly built 6.6 kernel:
+
+```bash
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -C /path/to/your/linux M=$(pwd) modules
+```
+
+Install the Modules: Mount the ROOTFS partition on the host.
+
+Create the kernel modules directory (e.g., /lib/modules/6.6.0-dirty/) and copy all .ko files from the rtw88 folder into it.
+
+Wi-Fi Firmware Injection & Activation
+
+The driver requires proprietary binary blobs from Realtek to initialize the radio.
+
+Download Firmware: Download the main firmware and the Wake-on-WLAN firmware directly from the Linux firmware repository:
+
+`rtw8703b_fw.bin`
+`rtw8703b_wow_fw.bin`
+
+Inject Firmware:
+
+Create the target directory on the SD card: `/mnt/ROOTFS/lib/firmware/rtw88/`
+
+Copy both .bin files into that directory.
+
+Activate (On the Tablet via USB Shell):
+
+Rebuild the module map: `depmod -a`
+
+Load the SDIO core and specific chip driver:
+
+```bash
+modprobe rtw_sdio
+modprobe rtw_8723cs
+```
+
+Verify the interface exists using ip a (look for wlan0).
+
+Connect to Network: Enable radio and connect via NetworkManager:
+
+```bash
+nmcli radio wifi on
+nmcli dev wifi connect "YOUR_SSID" password "YOUR_PASSWORD"
+```
