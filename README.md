@@ -117,7 +117,7 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- sunxi_defconfig
 # The USB Subsystem (Gadget Mode for Serial Console)
 ./scripts/config --enable CONFIG_USB_MUSB_GADGET
 ./scripts/config --enable CONFIG_USB_GADGET
-./scripts/config --module CONFIG_USB_G_SERIAL
+./scripts/config --module CONFIG_USB_G_SERIAL   # Building CONFIG_USB_G_SERIAL as a module (--module) rather than baking it in (--enable) is generally safer for systemd, as it allows the root filesystem to fully mount before the USB serial port initializes.)
 
 # The Wi-Fi (Realtek SDIO)
 ./scripts/config --enable CONFIG_WLAN
