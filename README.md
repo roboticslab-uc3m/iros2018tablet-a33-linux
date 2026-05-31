@@ -116,8 +116,11 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- sunxi_defconfig
 ./scripts/config --enable CONFIG_WLAN
 ./scripts/config --module CONFIG_CFG80211
 ./scripts/config --module CONFIG_MAC80211
-./scripts/config --enable CONFIG_STAGING             # Required for Realtek driver
-./scripts/config --enable CONFIG_R8723BS             # The RTL8723BS SDIO driver
+./scripts/config --enable CONFIG_WLAN_VENDOR_REALTEK
+./scripts/config --module CONFIG_RTW88
+./scripts/config --module CONFIG_RTW88_CORE
+./scripts/config --module CONFIG_RTW88_SDIO
+./scripts/config --module CONFIG_RTW88_8723CS
 
 # Apply config
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- olddefconfig
@@ -126,7 +129,7 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- olddefconfig
 (Inside the container) Compile the Kernel and Device Trees (this will take a few minutes)
 
 ```bash
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc) zImage dtbs
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc) zImage modules dtbs
 ```
 
 Exit the container and copy the generated core files to your microSD (adapt paths depending on your setup, e.g. `/media/$USER/BOOT` may be `/mnt/BOOT`)
