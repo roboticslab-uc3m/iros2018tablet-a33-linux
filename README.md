@@ -281,6 +281,7 @@ Because your host PC is x86 (Intel/AMD) and the tablet's Debian filesystem is AR
 # 1. Prep the Emulator and Mounts (Host PC)
 sudo cp /usr/bin/qemu-arm-static /media/$USER/ROOTFS/usr/bin/
 sudo mount --bind /dev /media/$USER/ROOTFS/dev
+sudo mount --bind /dev/pts /media/yo/ROOTFS/dev/pts
 sudo mount --bind /sys /media/$USER/ROOTFS/sys
 sudo mount --bind /proc /media/$USER/ROOTFS/proc
 sudo mount --bind /etc/resolv.conf /media/$USER/ROOTFS/etc/resolv.conf
@@ -311,6 +312,7 @@ exit
 
 # 3. Clean up Mounts (Host PC)
 sudo umount /media/$USER/ROOTFS/dev
+sudo umount /media/$USER/ROOTFS/dev?/pts
 sudo umount /media/$USER/ROOTFS/sys
 sudo umount /media/$USER/ROOTFS/proc
 sudo umount /media/$USER/ROOTFS/etc/resolv.conf
