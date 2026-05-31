@@ -150,6 +150,12 @@ cp arch/arm/boot/dts/allwinner/sun8i-a33-q8-tablet.dtb /media/$USER/BOOT/
 
 If you boot from this microSD card, you should reach Das U-Boot message ""Starting kernel ..."!
 
+To force USB gadget, Create the symlink to force systemd to spawn a login prompt on the USB gadget port (looks strange, but equivalent to `sudo chroot /media/$USER/ROOTFS; systemctl enable serial-getty@ttyGS0.service; exit`):
+
+```bash
+sudo ln -s /lib/systemd/system/serial-getty@.service /media/$USER/ROOTFS/etc/systemd/system/getty.target.wants/serial-getty@ttyGS0.service
+```
+
 ## Step 4: Install Debian (armhf)
 
 Run debootstrap to construct Debian 12 (Bookworm) for the 32-bit ARM architecture. This will take a few minutes as it downloads and extracts the core packages ((adapt paths depending on your setup, e.g. `/media/$USER/ROOTFS` may be `/mnt/ROOTFS`; additionally, permissions e.g. `sudo mount -o remount,exec,dev,suid /media/$USER/ROOTFS`):
