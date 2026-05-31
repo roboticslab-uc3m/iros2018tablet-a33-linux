@@ -132,18 +132,18 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- olddefconfig
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc) zImage modules dtbs
 ```
 
-Exit the container and copy the generated core files to your microSD (adapt paths depending on your setup, e.g. `/media/$(USER)/BOOT` may be `/mnt/BOOT`)
+Exit the container and copy the generated core files to your microSD (adapt paths depending on your setup, e.g. `/media/$USER/BOOT` may be `/mnt/BOOT`)
 
 ```bash
-cp arch/arm/boot/zImage /media/$(USER)/BOOT/
-cp arch/arm/boot/dts/allwinner/sun8i-a33-q8-tablet.dtb /media/$(USER)/BOOT/
+cp arch/arm/boot/zImage /media/$USER/BOOT/
+cp arch/arm/boot/dts/allwinner/sun8i-a33-q8-tablet.dtb /media/$USER/BOOT/
 ```
 
 If you boot from this microSD card, you should reach Das U-Boot message ""Starting kernel ..."!
 
 ## Step 4: Install Debian (armhf)
 
-Run debootstrap to construct Debian 12 (Bookworm) for the 32-bit ARM architecture. This will take a few minutes as it downloads and extracts the core packages ((adapt paths depending on your setup, e.g. `/media/$(USER)/ROOTFS` may be `/mnt/ROOTFS`; additionally, permissions e.g. `sudo mount -o remount,exec,dev,suid /media/$(USER)/ROOTFS`):
+Run debootstrap to construct Debian 12 (Bookworm) for the 32-bit ARM architecture. This will take a few minutes as it downloads and extracts the core packages ((adapt paths depending on your setup, e.g. `/media/$USER/ROOTFS` may be `/mnt/ROOTFS`; additionally, permissions e.g. `sudo mount -o remount,exec,dev,suid /media/$USER/ROOTFS`):
 
 ```bash
 sudo apt install debootstrap qemu-user-static
@@ -153,7 +153,7 @@ sudo debootstrap --arch=armhf bookworm /mnt/ROOTFS http://deb.debian.org/debian/
 Set the password:
 
 ```bash
-sudo chroot /media/$(USER)/ROOTFS /bin/bash
+sudo chroot /media/$USER/ROOTFS /bin/bash
 passwd
 ```
 
@@ -161,8 +161,8 @@ And update the hostname (when you run `debootstrap`, it often directly copies yo
 
 ```bash
 export NEW_HOSTNAME=iros2018tablet
-sudo bash -c "echo '$NEW_HOSTNAME' > /media/$(USER)/ROOTFS/etc/hostname"
-sudo bash -c "echo -e '127.0.0.1\tlocalhost\n127.0.1.1\t$NEW_HOSTNAME' > /media/$(USER)/ROOTFS/etc/hosts"
+sudo bash -c "echo '$NEW_HOSTNAME' > /media/$USER/ROOTFS/etc/hostname"
+sudo bash -c "echo -e '127.0.0.1\tlocalhost\n127.0.1.1\t$NEW_HOSTNAME' > /media/$USER/ROOTFS/etc/hosts"
 ```
 
 Note: `sudo screen /dev/ttyACM0 115200`
@@ -182,22 +182,20 @@ cd linux
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc) zImage modules dtbs
 cd ../rtw88
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -C ../linux M=$(pwd) modules
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -C ../linux M=$(pwd) INSTALL_MOD_PATH=./_export modules_install
 ```
-
 
 Install the Modules and Firmware
 
 After a successful build, use the kernel's built-in installation script to route the modules and generate the dependency lists directly on the SD card. The 8723CS chip shares RF silicon with the 8703B, so it explicitly requires the rtw8703b_fw.bin firmware blob to operate.
 
-Run from the rtw88 directory:
-
 ```bash
-sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -C ../linux M=$(pwd) INSTALL_MOD_PATH=/media/$(USER)/ROOTFS modules_install 
+sudo cp -r ./linux/_export/lib/modules/6.6.0-dirty/updates /media/$USER/ROOTFS/lib/modules/6.6.0-dirty/
+sudo depmod -a -b /media/$USER/ROOTFS 6.6.0-dirty
+sync
 ```
 
-    Verify rtw8703b_fw.bin is physically present in /media/yo/ROOTFS/lib/firmware/rtw88/.
-
-sudo wget https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/rtw88/rtw8723cs_fw.bin -O /mnt/tablet_root/lib/firmware/rtw88/rtw8723cs_fw.bin
+Verify rtw8703b_fw.bin is physically present in `/media/$USER/ROOTFS/lib/firmware/rtw88/`.
 
 Activate (On the Tablet via USB Shell):
 
