@@ -167,7 +167,7 @@ sudo bash -c "echo -e '127.0.0.1\tlocalhost\n127.0.1.1\t$NEW_HOSTNAME' > /media/
 
 Note: `sudo screen /dev/ttyACM0 115200`
 
-## Step 5: 
+## Step 5: Wifi
 
 The tablet's motherboard uses an RTL8703B chip (reporting on the SDIO bus as `0xb703`/8723CS). Mainline 6.6 does not include this driver. We must cross-compile the community rtw88 framework.
 
