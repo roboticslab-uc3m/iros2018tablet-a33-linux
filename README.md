@@ -237,3 +237,23 @@ nmcli dev wifi connect "YOUR_SSID" password "YOUR_PASSWORD"
 ```
 
 ## Step 6: Install stuff
+
+Because your host PC is x86 (Intel/AMD) and the tablet's Debian filesystem is ARM, a standard chroot will immediately crash with an "Exec format error." You have to inject an emulator into the SD card first (`qemu-user-static` we installed before).
+
+```bash
+sudo cp /usr/bin/qemu-arm-static /media/$USER/ROOTFS/usr/bin/
+sudo mount --bind /dev /media/yo/ROOTFS/dev
+sudo mount --bind /sys /media/yo/ROOTFS/sys
+sudo mount --bind /proc /media/yo/ROOTFS/proc
+sudo mount --bind /etc/resolv.conf /media/yo/ROOTFS/etc/resolv.conf
+sudo chroot /media/$USER/ROOTFS
+apt update
+apt install network-manager wpasupplicant iptables
+exit
+sudo umount /media/yo/ROOTFS/dev
+sudo umount /media/yo/ROOTFS/sys
+sudo umount /media/yo/ROOTFS/proc
+sudo umount /media/yo/ROOTFS/etc/resolv.conf
+```
+
+Note `nmtui` as ASCII-art Wi-Fi menu.
