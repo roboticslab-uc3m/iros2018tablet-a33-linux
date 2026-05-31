@@ -156,7 +156,7 @@ To force USB gadget, Create the symlink to force systemd to spawn a login prompt
 sudo ln -s /lib/systemd/system/serial-getty@.service /media/$USER/ROOTFS/etc/systemd/system/getty.target.wants/serial-getty@ttyGS0.service
 ```
 
-Check via `echo "ttyGS0" | sudo tee -a /media/yo/ROOTFS/etc/securetty`.
+Check via `echo "ttyGS0" | sudo tee -a /media/$USER/ROOTFS/etc/securetty`.
 
 ## Step 4: Install Debian (armhf)
 
@@ -238,22 +238,82 @@ nmcli dev wifi connect "YOUR_SSID" password "YOUR_PASSWORD"
 
 ## Step 6: Install stuff
 
+Ensure the NetworkManager config directory exists on the SD card
+
+```bash
+sudo mkdir -p /media/$USER/ROOTFS/etc/NetworkManager/system-connections/
+```
+
+Write the connection profile directly to the SD card
+
+```bash
+sudo tee /media/$USER/ROOTFS/etc/NetworkManager/system-connections/HomeWiFi.nmconnection > /dev/null <<EOF
+[connection]
+id=HomeWiFi
+type=wifi
+interface-name=wlan0
+
+[wifi]
+ssid=YOUR_WIFI_NAME
+mode=infrastructure
+
+[wifi-security]
+key-mgmt=wpa-psk
+psk=YOUR_WIFI_PASSWORD
+
+[ipv4]
+method=auto
+
+[ipv6]
+method=ignore
+EOF
+```
+
+CRITICAL: NetworkManager will completely ignore this file if the permissions aren't locked down!
+
+```bash
+sudo chmod 600 /media/$USER/ROOTFS/etc/NetworkManager/system-connections/HomeWiFi.nmconnection
+```
+
 Because your host PC is x86 (Intel/AMD) and the tablet's Debian filesystem is ARM, a standard chroot will immediately crash with an "Exec format error." You have to inject an emulator into the SD card first (`qemu-user-static` we installed before).
 
 ```bash
+# 1. Prep the Emulator and Mounts (Host PC)
 sudo cp /usr/bin/qemu-arm-static /media/$USER/ROOTFS/usr/bin/
-sudo mount --bind /dev /media/yo/ROOTFS/dev
-sudo mount --bind /sys /media/yo/ROOTFS/sys
-sudo mount --bind /proc /media/yo/ROOTFS/proc
-sudo mount --bind /etc/resolv.conf /media/yo/ROOTFS/etc/resolv.conf
+sudo mount --bind /dev /media/$USER/ROOTFS/dev
+sudo mount --bind /sys /media/$USER/ROOTFS/sys
+sudo mount --bind /proc /media/$USER/ROOTFS/proc
+sudo mount --bind /etc/resolv.conf /media/$USER/ROOTFS/etc/resolv.conf
+
+# 2. Enter the Matrix
 sudo chroot /media/$USER/ROOTFS
+
+# --- INSIDE CHROOT ---
 apt update
+
+# Fix Locales
+apt install locales
+sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+locale-gen
+update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+
+# Install Networking
 apt install network-manager wpasupplicant iptables
+
+# Install and Enable SSH
+apt install openssh-server
+systemctl enable ssh
+sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# Leave the Matrix
 exit
-sudo umount /media/yo/ROOTFS/dev
-sudo umount /media/yo/ROOTFS/sys
-sudo umount /media/yo/ROOTFS/proc
-sudo umount /media/yo/ROOTFS/etc/resolv.conf
+# ---------------------
+
+# 3. Clean up Mounts (Host PC)
+sudo umount /media/$USER/ROOTFS/dev
+sudo umount /media/$USER/ROOTFS/sys
+sudo umount /media/$USER/ROOTFS/proc
+sudo umount /media/$USER/ROOTFS/etc/resolv.conf
 ```
 
 Note `nmtui` as ASCII-art Wi-Fi menu.
