@@ -319,3 +319,15 @@ sudo umount /media/$USER/ROOTFS/etc/resolv.conf
 ```
 
 Note `nmtui` as ASCII-art Wi-Fi menu.
+
+## Step 7: Verify Graphics
+
+On the device:
+
+```bash
+dmesg | grep lima
+export XDG_RUNTIME_DIR=/run/user/0
+mkdir -p $XDG_RUNTIME_DIR
+chmod 0700 $XDG_RUNTIME_DIR
+weston --tty=1 --backend=drm-backend.so
+```
