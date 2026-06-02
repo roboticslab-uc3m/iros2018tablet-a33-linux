@@ -162,17 +162,24 @@
 &i2c0 {
     status = "okay";
 
-    touchscreen@40 {
-        compatible = "silead,gsl2681", "silead,gsl1680";
+    silead_ts: touchscreen@40 {
+        /* Strictly use the gsl1680 string so the Linux driver matches it */
+        compatible = "silead,gsl1680";
         reg = <0x40>;
         
+        /* CRITICAL: Force the node to wake up and override the base DTSI */
+        status = "okay";
+
+        /* The Silead driver expects both of these power supplies defined */
         vddio-supply = <&reg_eldo1>;
+        avdd-supply = <&reg_eldo1>;
 
         /* Interrupt Pin: PB05 (Bank B=1, Pin 5) */
         interrupt-parent = <&pio>;
         interrupts = <1 5 IRQ_TYPE_EDGE_FALLING>;
 
         /* Wake/Power Pin: PH01 (Bank H=7, Pin 1) */
+        enable-gpios = <&pio 7 1 GPIO_ACTIVE_HIGH>;
         power-gpios = <&pio 7 1 GPIO_ACTIVE_HIGH>;
 
         touchscreen-size-x = <800>;
