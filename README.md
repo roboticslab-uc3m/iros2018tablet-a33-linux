@@ -320,9 +320,16 @@ sudo umount /media/$USER/ROOTFS/etc/resolv.conf
 
 Note `nmtui` as ASCII-art Wi-Fi menu.
 
-## Step 7: Verify Graphics
+## Step 7: Verify Touchscreen and Graphics
 
-On the device:
+Touchscreen (on the device):
+
+```bash
+dmesg | grep -i silead
+evtest
+```
+
+Graphics (on the device):
 
 ```bash
 dmesg | grep lima
