@@ -182,9 +182,8 @@
         enable-gpios = <&pio 7 1 GPIO_ACTIVE_HIGH>;
         power-gpios = <&pio 7 1 GPIO_ACTIVE_HIGH>;
 
-        touchscreen-size-x = <800>;
-        touchscreen-size-y = <480>;
-        touchscreen-inverted-x;
-        touchscreen-swapped-x-y;
+        /* The true raw boundaries of the physical glass */
+        touchscreen-size-x = <1450>;
+        touchscreen-size-y = <750>;
     };
 };

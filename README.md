@@ -322,17 +322,37 @@ Note `nmtui` as ASCII-art Wi-Fi menu.
 
 ## Step 7: Verify Touchscreen and Graphics
 
-Touchscreen (on the device):
+### Touchscreen (on the device)
 
 ```bash
 dmesg | grep -i silead
+```
+
+```bash
 evtest
 ```
 
-Graphics (on the device):
+### Graphics (on the device)
 
 ```bash
 dmesg | grep lima
+```
+
+```bash
+mkdir -p /etc/xdg/weston
+cat << 'EOF' > /etc/xdg/weston/weston.ini
+[core]
+idle-time=0
+
+[input-method]
+path=/usr/lib/arm-linux-gnueabihf/weston-keyboard
+
+[keyboard]
+keymap_layout=us
+EOF
+```
+
+```bash
 export XDG_RUNTIME_DIR=/run/user/0
 mkdir -p $XDG_RUNTIME_DIR
 chmod 0700 $XDG_RUNTIME_DIR
