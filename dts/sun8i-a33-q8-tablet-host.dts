@@ -144,7 +144,7 @@
     status = "okay";
 };
 
-/* USB Physical Layer */
+/* USB Physical Layer (Host Mode) */
 &usbphy {
     /* Completely delete the hardware detection pins */
     /delete-property/ pinctrl-names;
@@ -158,7 +158,7 @@
     status = "okay";
 };
 
-/* USB Controller */
+/* USB Controller (Host Mode) */
 &usb_otg {
     compatible = "allwinner,sun8i-a33-musb";
     /* Tell the driver to permanently act as the Host */
