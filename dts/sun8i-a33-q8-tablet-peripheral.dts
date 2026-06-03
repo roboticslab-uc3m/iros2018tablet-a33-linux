@@ -139,7 +139,7 @@
     };
 };
 
-/* USB Subsystem (Peripheral Mode) */
+/* USB Subsystem */
 &usb_power_supply {
     status = "okay";
 };
