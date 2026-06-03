@@ -185,5 +185,9 @@
         /* The true raw boundaries of the physical glass */
         touchscreen-size-x = <1450>;
         touchscreen-size-y = <750>;
+
+        /* Add deadzone to convert drags into clicks */
+        /* touchscreen-fuzz-x = <15>; */
+        /* touchscreen-fuzz-y = <15>; */
     };
 };

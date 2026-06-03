@@ -322,7 +322,7 @@ Note `nmtui` as ASCII-art Wi-Fi menu.
 
 ## Step 7: Verify Touchscreen and Graphics
 
-### Touchscreen (on the device)
+### Touchscreen (on the device, mostly via ssh)
 
 ```bash
 dmesg | grep -i silead
@@ -332,7 +332,7 @@ dmesg | grep -i silead
 evtest
 ```
 
-### Graphics (on the device)
+### Graphics (on the device, mostly via ssh)
 
 ```bash
 dmesg | grep lima
@@ -352,9 +352,19 @@ keymap_layout=us
 EOF
 ```
 
+Launch desktop:
+
 ```bash
 export XDG_RUNTIME_DIR=/run/user/0
 mkdir -p $XDG_RUNTIME_DIR
 chmod 0700 $XDG_RUNTIME_DIR
 weston --tty=1 --backend=drm-backend.so
+```
+
+Launch virtual keyboard test inside desktop:
+
+```bash
+export XDG_RUNTIME_DIR=/run/user/0
+export WAYLAND_DISPLAY=wayland-1
+weston-editor
 ```
