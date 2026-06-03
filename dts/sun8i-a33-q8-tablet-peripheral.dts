@@ -98,6 +98,14 @@
     };
 };
 
+&pio {
+    usb0_id_pin: usb0-id-pin {
+        pins = "PH8";
+        function = "gpio_in";
+        bias-pull-up; /* 3.3V resting state for the OTG cable to ground */
+    };
+};
+
 /* Display Output to Panel */
 &tcon0_out {
     tcon0_out_lcd: endpoint@0 {
@@ -136,17 +144,25 @@
     status = "okay";
 };
 
+/* USB Physical Layer */
 &usbphy {
-    /delete-property/ usb0_vbus_det-gpios;
+    /* Completely delete the hardware detection pins */
+    /delete-property/ pinctrl-names;
+    /delete-property/ pinctrl-0;
     /delete-property/ usb0_id_det-gpios;
+    /delete-property/ usb0_vbus_det-gpios;
+    /delete-property/ usb0_vbus_power-supply;
     
-    /* Tell the PHY to use the PMIC to detect when the PC is plugged in */
-    usb0_vbus_power-supply = <&usb_power_supply>;
+    /* Force the tablet to act as a power bank and constantly output 5V */
+    usb0_vbus-supply = <&reg_drivevbus>;
     status = "okay";
 };
 
+/* USB Controller */
 &usb_otg {
-    dr_mode = "peripheral";
+    compatible = "allwinner,sun8i-a33-musb";
+    /* Tell the driver to permanently act as the Host */
+    dr_mode = "host";
     status = "okay";
 };
 
