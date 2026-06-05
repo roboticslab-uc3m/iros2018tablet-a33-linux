@@ -144,22 +144,19 @@
     status = "okay";
 };
 
-/* USB Physical Layer (Host Mode) */
+/* USB Physical Layer (Locked to Host) */
 &usbphy {
-    /* Completely delete the hardware detection pins */
     /delete-property/ usb0_id_det-gpios;
     /delete-property/ usb0_vbus_det-gpios;
     /delete-property/ usb0_vbus_power-supply;
     
-    /* Force the tablet to act as a power bank and constantly output 5V */
     usb0_vbus-supply = <&reg_drivevbus>;
     status = "okay";
 };
 
-/* USB Controller (Host Mode) */
+/* USB Controller (Locked to Host) */
 &usb_otg {
     compatible = "allwinner,sun8i-a33-musb";
-    /* Tell the driver to permanently act as the Host */
     dr_mode = "host";
     status = "okay";
 };

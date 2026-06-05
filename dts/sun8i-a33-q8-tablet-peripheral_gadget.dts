@@ -144,20 +144,19 @@
     status = "okay";
 };
 
-/* USB Physical Layer (Peripheral Mode) */
+/* USB Physical Layer (Locked to Peripheral) */
 &usbphy {
-    /* Stop sending 5V out! */
-    /delete-property/ usb0_vbus-supply; 
+    /delete-property/ usb0_id_det-gpios;
+    /delete-property/ usb0_vbus_det-gpios;
+    /delete-property/ usb0_vbus-supply; /* CRITICAL: Stops 5V out! */
     
-    /* Safely detect incoming 5V from the PC */
     usb0_vbus_power-supply = <&usb_power_supply>;
     status = "okay";
 };
 
-/* USB Controller (Peripheral Mode) */
+/* USB Controller (Locked to Peripheral) */
 &usb_otg {
     compatible = "allwinner,sun8i-a33-musb";
-    /* Act as a slave */
     dr_mode = "peripheral";
     status = "okay";
 };
