@@ -147,8 +147,6 @@
 /* USB Physical Layer (Host Mode) */
 &usbphy {
     /* Completely delete the hardware detection pins */
-    /delete-property/ pinctrl-names;
-    /delete-property/ pinctrl-0;
     /delete-property/ usb0_id_det-gpios;
     /delete-property/ usb0_vbus_det-gpios;
     /delete-property/ usb0_vbus_power-supply;
