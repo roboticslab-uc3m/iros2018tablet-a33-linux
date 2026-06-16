@@ -102,7 +102,7 @@
     usb0_id_pin: usb0-id-pin {
         pins = "PH8";
         function = "gpio_in";
-        bias-pull-up; /* 3.3V resting state for the OTG cable to ground */
+        bias-pull-up; /* 3.3V resting state */
     };
 };
 
@@ -144,20 +144,27 @@
     status = "okay";
 };
 
-/* USB Physical Layer (Locked to Peripheral) */
+/* USB Physical Layer (Dual Role / OTG Mode) */
 &usbphy {
-    /delete-property/ usb0_id_det-gpios;
-    /delete-property/ usb0_vbus_det-gpios;
-    /delete-property/ usb0_vbus-supply; /* CRITICAL: Stops 5V out! */
+    pinctrl-names = "default";
+    pinctrl-0 = <&usb0_id_pin>;
     
-    usb0_vbus_power-supply = <&usb_power_supply>;
+    /* The real ID pin. ACTIVE_LOW means 0V = OTG Cable Connected */
+    usb0_id_det-gpios = <&pio 7 8 GPIO_ACTIVE_LOW>;
+    
+    /* Break the PMIC deadlock by removing incoming power detection */
+    /delete-property/ usb0_vbus_power-supply;
+    /delete-property/ usb0_vbus_det-gpios;
+    
+    /* Send 5V out to keyboard/dongle (Host Mode) */
+    usb0_vbus-supply = <&reg_drivevbus>;
     status = "okay";
 };
 
-/* USB Controller (Locked to Peripheral) */
+/* USB Controller (Dual Role / OTG Mode) */
 &usb_otg {
     compatible = "allwinner,sun8i-a33-musb";
-    dr_mode = "peripheral";
+    dr_mode = "otg";
     status = "okay";
 };
 
