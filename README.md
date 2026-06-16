@@ -159,6 +159,12 @@ sudo ln -s /lib/systemd/system/serial-getty@.service /media/$USER/ROOTFS/etc/sys
 
 Check via `echo "ttyGS0" | sudo tee -a /media/$USER/ROOTFS/etc/securetty`.
 
+Also, to check USB stuff:
+
+```bash
+udevadm monitor --environment --udev
+```
+
 ## Step 4: Install Debian (armhf)
 
 Run debootstrap to construct Debian 12 (Bookworm) for the 32-bit ARM architecture. This will take a few minutes as it downloads and extracts the core packages ((adapt paths depending on your setup, e.g. `/media/$USER/ROOTFS` may be `/mnt/ROOTFS`; additionally, permissions e.g. `sudo mount -o remount,exec,dev,suid /media/$USER/ROOTFS`):
