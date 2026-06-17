@@ -119,8 +119,8 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- sunxi_defconfig
 # 2. Enable the general Linux Gadget subsystem
 ./scripts/config --enable CONFIG_USB_GADGET
 
-# 3. Keep the Serial Gadget as a module
-./scripts/config --module CONFIG_USB_G_SERIAL
+# 3. Bake the Serial Gadget directly into the kernel (No module loading needed!)
+./scripts/config --enable CONFIG_USB_G_SERIAL
 
 # The Wi-Fi (Realtek SDIO)
 ./scripts/config --enable CONFIG_WLAN
