@@ -102,7 +102,8 @@
     usb0_id_pin: usb0-id-pin {
         pins = "PH8";
         function = "gpio_in";
-        bias-pull-up; /* 3.3V resting state */
+        /* We MUST let Linux see this so it activates the 3.3V resistor! */
+        bias-pull-up; 
     };
 };
 
@@ -146,24 +147,26 @@
 
 /* USB Physical Layer (Dual Role / OTG Mode) */
 &usbphy {
+    /* Restore the pinctrl so the pull-up resistor activates */
     pinctrl-names = "default";
     pinctrl-0 = <&usb0_id_pin>;
     
-    /* The real ID pin. ACTIVE_LOW means 0V = OTG Cable Connected */
-    usb0_id_det-gpios = <&pio 7 8 GPIO_ACTIVE_LOW>;
+    /* Mainline standard for sun8i ID pin is ACTIVE_HIGH */
+    usb0_id_det-gpios = <&pio 7 8 GPIO_ACTIVE_HIGH>;
     
-    /* Break the PMIC deadlock by removing incoming power detection */
-    /delete-property/ usb0_vbus_power-supply;
-    /delete-property/ usb0_vbus_det-gpios;
+    /* Let the AXP223 PMIC detect incoming 5V from a PC */
+    usb0_vbus_power-supply = <&usb_power_supply>;
     
-    /* Send 5V out to keyboard/dongle (Host Mode) */
+    /* Let the AXP223 PMIC output 5V to a keyboard */
     usb0_vbus-supply = <&reg_drivevbus>;
+    
     status = "okay";
 };
 
 /* USB Controller (Dual Role / OTG Mode) */
 &usb_otg {
     compatible = "allwinner,sun8i-a33-musb";
+    /* Let the hardware decide who is boss */
     dr_mode = "otg";
     status = "okay";
 };
